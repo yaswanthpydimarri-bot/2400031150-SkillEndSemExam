@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Attendance Tracker</title>
+</head>
+<body>
+  <div id="root"></div>
+
+  <!-- React and ReactDOM -->
+  <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+  <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+
+  <script type="text/babel">
+    const { useReducer } = React;
+
+    const initialState = [
+      { id: 1, name: "Alice", status: "Absent" },
+      { id: 2, name: "Bob", status: "Absent" },
+      { id: 3, name: "Charlie", status: "Absent" },
+    ];
+
+    function reducer(state, action) {
+      switch(action.type) {
+        case "MARK_PRESENT":
+          return state.map(student =>
+            student.id === action.id ? { ...student, status: "Present" } : student
+          );
+        case "MARK_ABSENT":
+          return state.map(student =>
+            student.id === action.id ? { ...student, status: "Absent" } : student
+          );
+        case "RESET":
+          return state.map(student => ({ ...student, status: "Absent" }));
+        default:
+          return state;
+      }
+    }
+
+    function AttendanceTracker() {
+      const [students, dispatch] = useReducer(reducer, initialState);
+
+      return (
+        <div>
+          <h1>Student Attendance Tracker</h1>
+          <table border="1" cellPadding="10">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {students.map(student => (
+                <tr key={student.id}>
+                  <td>{student.name}</td>
+                  <td>{student.status}</td>
+                  <td>
+                    <button onClick={() => dispatch({ type: "MARK_PRESENT", id: student.id })}>
+                      Present
+                    </button>
+                    <button onClick={() => dispatch({ type: "MARK_ABSENT", id: student.id })}>
+                      Absent
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <button onClick={() => dispatch({ type: "RESET" })}>Reset Attendance</button>
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById("root")).render(<AttendanceTracker />);
+  </script>
+</body>
+</html>
